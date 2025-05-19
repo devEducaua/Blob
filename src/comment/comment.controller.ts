@@ -5,11 +5,11 @@ import type { Request, Response } from 'express';
 class CommentController {
     async getByPost(req: Request, res: Response) {
         try {
-            const postId = req.params.postid;
+            const id = req.params.id;
 
-            exists("post", postId);
+            exists("post", id);
 
-            const comments = await CommentService.getByType( postId, "post");
+            const comments = await CommentService.getByType( id, "post");
             res.json(comments);
 
         }
@@ -22,11 +22,11 @@ class CommentController {
 
     async getByUser(req: Request, res: Response) {
         try {
-            const userId = req.params.userId;
+            const id = req.params.id;
 
-            exists("user", userId);
+            exists("user", id);
 
-            const comments = await CommentService.getByType(userId, "user");
+            const comments = await CommentService.getByType(id, "user");
             res.json(comments);
 
         }
@@ -36,11 +36,37 @@ class CommentController {
         }
     }
 
-    create() {
+    async create(req: Request, res: Response) {
+        try {
+            const { content, userId } = req.body;
+            const postId = req.params.id;
 
+            await CommentService.createComment(content, postId, userId);
+
+            res.status(201).json({ message: "Comment Created" })
+
+        }
+        catch(err) {
+            if (err.message.includes("404")) return res.status(404).json({ Err: "User Not Found"});
+            res.status(500).json({ Err: "Internal error on server" });
+        }
     }
 
-    delete() {
+    async update(req: Request, res: Response) {
+        const { content } = req.body;
+        const id = req.params.commentId;
+
+        await CommentService.updateComment(content, id);
+
+        res.json({ message: "Comment Updated" })
+    }
+
+    async delete(req: Request, res: Response) {
+        const id = req.params.commentId;
+
+        await CommentService.deleteComment(id)
+
+        res.json({ message: "Comment Deleted" })
 
     }
 }

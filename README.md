@@ -3,9 +3,7 @@
 
 **Still in development**
 
-# Endpoints
-
 # Technologies used:
-    - Typescript
-    - Express
-    - PostgreSQL
+- Typescript
+- Express
+- PostgreSQL

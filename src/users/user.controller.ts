@@ -37,8 +37,9 @@ class UserController {
             res.status(201).json({ message: "User Created"})
         }
 
-        catch {
+        catch(err) {
             res.status(500).json({ Err: "Internal error"})
+            console.log(err);
         }
     }
 
@@ -50,8 +51,9 @@ class UserController {
 
             res.json({ message: "Login successful", token })
         }
-        catch {
+        catch(err) {
             res.status(500).json({ Err: "Internal error"})
+            console.log(err);
         }
     }
 

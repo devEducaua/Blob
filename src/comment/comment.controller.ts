@@ -1,4 +1,3 @@
-import { exists } from '../utils/exists.ts';
 import CommentService from './comment.service.ts'
 import type { Request, Response } from 'express';
 
@@ -7,9 +6,7 @@ class CommentController {
         try {
             const id = req.params.id;
 
-            exists("post", id);
-
-            const comments = await CommentService.getByType( id, "post");
+            const comments = await CommentService.getByPost(id);
             res.json(comments);
 
         }
@@ -24,9 +21,8 @@ class CommentController {
         try {
             const id = req.params.id;
 
-            exists("user", id);
+            const comments = await CommentService.getByUser(id);
 
-            const comments = await CommentService.getByType(id, "user");
             res.json(comments);
 
         }

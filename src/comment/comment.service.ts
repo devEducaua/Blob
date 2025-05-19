@@ -1,29 +1,39 @@
-import pool from "../models/db";
-import { exists } from "../utils/exists";
+import pool from "../models/db.ts";
+import { exists } from "../utils/exists.ts";
 
 class CommentService {
-    async getByType(postId: string, type: string) {
+    async getByPost(postId: string) {
+        const comments = await pool.query("SELECT * FROM comments WHERE post_id = $1", [postId]);
+        
+        await exists("post", postId);
 
-        const comments = await pool.query(`SELECT * FROM comments WHERE ${type}_id = $1`, [postId]);
+        return comments.rows;
+    }
+
+    async getByUser(userId: string) {
+        const comments = await pool.query("SELECT * FROM comments WHERE user_id = $1", userId);
+
+        await exists("user", userId);
+
         return comments.rows;
     }
 
     async createComment(content: string, postId: string, userId: string) {
-        exists("user", userId);
+        await exists("user", userId);
 
-        exists("post", postId);   
+        await exists("post", postId);   
 
         await pool.query("INSERT INTO comments (content, post_id, user_id) VALUES ($1, $2, $3", [content, postId, userId]);
     }
 
     async updateComment(id: string, newContent: string) {
-        exists("comment", id);
+        await exists("comment", id);
 
         await pool.query("UPDATE comments SET content = $1 WHERE id = $2", [newContent, id]);
     }
 
     async deleteComment(id: string) {
-        exists("comment", id);
+        await exists("comment", id);
 
         await pool.query("DELETE FROM comments WHERE id = $1", [id]);
     }

@@ -1,5 +1,5 @@
-import pool from "../models/db";
-import { exists } from "../utils/exists";
+import pool from "../models/db.ts";
+import { exists } from "../utils/exists.ts";
 
 interface postData {
     title: string,
@@ -14,7 +14,7 @@ class PostServices {
     }
 
     async getById(id: string) {
-        const postRows = exists("post", id);
+        const postRows = await exists("post", id);
         return postRows;
     }
 
@@ -33,7 +33,7 @@ class PostServices {
     }
 
     async deletePost( postId: string ) {
-        exists("post", postId);
+        await exists("post", postId);
 
         await pool.query("DELETE FROM posts WHERE id = $1", [postId]);
     }

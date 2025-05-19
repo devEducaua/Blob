@@ -1,9 +1,11 @@
 # Blob
-Blob is a simple blog, I am making this for only studies purpose
+**Blob** is a simple blog, I am making this for only studies purpose
 
-*Still in development*
+**Still in development**
 
-- Technologies used:
+# Endpoints
+
+# Technologies used:
     - Typescript
     - Express
     - PostgreSQL

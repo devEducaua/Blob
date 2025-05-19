@@ -1,10 +1,10 @@
 import type { Request, Response } from "express";
-import userService from "../services/userService.ts";
+import UserService from "./user.service.ts";
 
-class userController {
+class UserController {
     async getAll(req: Request, res: Response) {
         try {
-            const users = await userService.getUsers();
+            const users = await UserService.getUsers();
 
             res.json(users);
         }
@@ -14,11 +14,25 @@ class userController {
         
     }
 
+    async getById(req: Request, res: Response) {
+        try {
+            const id = req.params.id;
+
+            const user = await UserService.getUserById(id);
+
+            res.json(user);
+        }
+        catch(err) {
+            if (err.message.includes("404")) return res.status(404).json({ Err: "User Not Found"});
+            res.status(500).json({ Err: "Internal error"})
+        }
+    }
+
     async create(req: Request, res: Response) {
         try {
             const data = req.body;
 
-            await userService.registerUser(data);
+            await UserService.registerUser(data);
             
             res.status(201).json({ message: "User Created"})
         }
@@ -32,7 +46,7 @@ class userController {
         try {
             const data = req.body;
 
-            const token = await userService.loginUser(data);
+            const token = await UserService.loginUser(data);
 
             res.json({ message: "Login successful", token })
         }
@@ -46,7 +60,7 @@ class userController {
             const data = req.body;
             const id = req.params.id
 
-            await userService.deleteUser(data, id);
+            await UserService.deleteUser(data, id);
 
             res.json({ message: " User Deleted" })
         }
@@ -58,4 +72,4 @@ class userController {
     }
 }
 
-export default new userController();
+export default new UserController();

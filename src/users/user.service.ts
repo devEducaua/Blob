@@ -1,7 +1,8 @@
 import pool from "../models/db.ts";    
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import { validEmail } from "../utils/validateEmail.ts";
+import { validEmail } from "../utils/email.validate.ts";
+import { exists } from "../utils/exists.ts";
 
 interface userData {
     name: string,
@@ -9,15 +10,15 @@ interface userData {
     password: string
 }
 
-class userService {
+class UserService {
     async getUsers() {
         const result = await pool.query("SELECT * FROM users");
         return result.rows;
     }
 
     async getUserById(id: string) {
-        const userResult = await pool.query("SELECT * FROM users WHERE id = $1", [id]);
-        return userResult.rows;
+        const userRows = exists("user", id);
+        return userRows;
     }
 
     async registerUser(data: userData) {
@@ -36,6 +37,7 @@ class userService {
         await validEmail(email);
 
         const user = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+        await exists("user", user.id);
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
@@ -49,12 +51,10 @@ class userService {
     async deleteUser(data: { password: string }, id: string) {
         const { password } = data;
 
-        const userResult = await pool.query("SELECT * FROM users WHERE id = $1", [id]);
-        if (userResult.rows.length == 0) {
-            throw new Error("User not found");
-        }
+        await exists("user", id);
+        const userRows = exists("user", id);
 
-        const user = userResult.rows[0];
+        const user = userRows[0];
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
@@ -64,4 +64,4 @@ class userService {
     }
 }
 
-export default new userService();
+export default new UserService();

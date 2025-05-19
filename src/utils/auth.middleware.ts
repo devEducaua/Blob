@@ -1,6 +1,12 @@
 import type { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken'
 
+interface jwtPayload {
+    id: number,
+    name: string,
+    email: string
+}
+
 export function authenticate(req: Request, res: Response, next: NextFunction) {
     const header = req.headers.authorization;
 
@@ -9,8 +15,10 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
     const token = header.split(' ')[1];
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT);
-        req.user = decoded;
+        const decoded = jwt.verify(token, process.env.JWT) as jwtPayload;
+
+        (req as Request & { user: jwtPayload}).user = decoded;
+
         next();
     }
     catch {

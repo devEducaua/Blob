@@ -35,7 +35,7 @@ class PostController  {
 
             await PostsService.createPost(data);
             
-            res.status(201).json({ message: "User Created" })
+            res.status(201).json({ message: "Post Created" })
         }
         catch {
             res.status(500).json({ Error: "Internal error on server"});
